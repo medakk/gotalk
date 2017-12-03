@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <title>Hey</title>
+
+        <script>
+            var mediaRecorder;
+            var wsConnection = new WebSocket('ws://localhost:8080/ws/');
+
+            navigator.mediaDevices.getUserMedia({audio: true})
+                     .then(function (mediaStream) {
+                         mediaRecorder = new MediaRecorder(mediaStream);
+                         mediaRecorder.start(500);
+                         mediaRecorder.ondataavailable = function(e) {
+                             var reader = new window.FileReader();
+                             reader.readAsDataURL(e.data);
+                             reader.onloadend = function() {
+                                wsConnection.send(reader.result);
+                             }
+                         }
+
+                     }).catch(function (err) {
+                         console.log("error:", err);
+                     });
+
+            function pauseCapture() {
+                mediaRecorder.pause();
+            }
+            function resumeCapture() {
+                mediaRecorder.resume();
+            }
+        </script>
+    </head>
+
+    <body>
+        <button onclick="pauseCapture()">Pause Capture</input>
+        <button onclick="resumeCapture()">Resume Capture</input>
+
+    </body>
+</html>
