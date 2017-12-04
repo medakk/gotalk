@@ -6,10 +6,14 @@
             var mediaRecorder;
             var wsConnection = new WebSocket('ws://localhost:8080/ws/');
 
+            wsConnection.onmessage = function(message) {
+                console.log('Message received:', message.data);
+            };
+
             navigator.mediaDevices.getUserMedia({audio: true})
                      .then(function (mediaStream) {
                          mediaRecorder = new MediaRecorder(mediaStream);
-                         mediaRecorder.start(500);
+                         mediaRecorder.start(2000);
                          mediaRecorder.ondataavailable = function(e) {
                              var reader = new window.FileReader();
                              reader.readAsDataURL(e.data);

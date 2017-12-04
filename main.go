@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/medakk/audiostream/client"
+	"github.com/medakk/gotalk/client"
 )
 
 func main() {

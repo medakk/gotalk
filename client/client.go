@@ -1,9 +1,11 @@
 package client
 
 import (
+	"encoding/base64"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gorilla/websocket"
@@ -39,10 +41,20 @@ func (c *Client) ReadPump() {
 func (c *Client) ProcessPump() {
 	defer c.Conn.Close()
 
+	outFile, _ := os.Create("out.ogg")
+
+	var i int = 1
 	for {
 		select {
 		case message := <-c.ProcessChannel:
-			processedMessage := []byte(strings.ToUpper(string(message)))
+			decoded, err := base64.StdEncoding.DecodeString(strings.Split(string(message), ",")[1])
+			if err != nil {
+				log.Fatal("Bad b64: ", err)
+			}
+			outFile.Write(decoded)
+
+			i += 1
+			processedMessage := []byte(fmt.Sprintf("Received %d bytes", len(message)))
 			c.SendChannel <- processedMessage
 		}
 	}
